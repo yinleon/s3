@@ -11,12 +11,12 @@ writing Pandas dataframes to csv and json files on s3.<br>
 loading and unloading scikit-learn models from s3.
 
 Pandas and Scikit-Learn and useful tools in the Python Data ecosystem.<br>
-Check out the <a href='github.com/yinleon/s3/tutorial.ipynb'>tutorial</a> and see the module in action.
+Check out the <a href='http://nbviewer.jupyter.org/github/yinleon/s3/blob/master/tutorial.ipynb'>tutorial</a> and see the module in action.
 
 
 ## Installation
 Configure s3 as you would for boto3.
-<a href="http://boto3.readthedocs.io/en/latest/guide/configuration.html">read here</a>
+<a href="http://boto3.readthedocs.io/en/latest/guide/configuration.html">read here</a><br>
 TLDR; Environment Variables or configuring AWS CLI work best.
 
 ## Usage
