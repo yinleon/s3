@@ -240,7 +240,26 @@ def exists(s3_path):
 
     objs = list(bucket.objects.filter(Prefix=key_))
     
-    if len(objs) > 0 and objs[0].key == key_:
+    if len(objs) > 0 and key__ in objs[0].key:
         return True
     else:
         return False
+
+def file_exists(s3_path):
+    '''
+    chekcs if a key exists.
+    Works only for files, and not directory.
+    Cheaper than exists, which employs a list.
+    '''
+    s3 = boto3.resource('s3')
+
+    try:  
+        s3.Object(bucket_, key_).load()
+    except botocore.exceptions.ClientError as e:
+        if e.response['Error']['Code'] == "404":
+            return False
+        else:
+            # Something else has gone wrong.
+            print(e)
+            return False
+    return True
