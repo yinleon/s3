@@ -21,22 +21,14 @@ TLDR; Environment Variables or configuring AWS CLI work best.
 
 ## Usage
 Install requirements
-```pip install -r requirements.txt```
+```pip install s34me```
 
-Either use in a local directory or<br>
-In terminal- copy the `$PATH` (consider this a variable) of the module directory using: `pwd|pbcopy`
+Note that this only works with Pandas 0.19.1 and below.<br>
+See: https://github.com/boto/botocore/pull/1195<br>
+See: https://github.com/pandas-dev/pandas/issues/17135<br>
 
-Add the module to the to PYTHONPATH
-
+When either of these are resolved, this will work with the latest distribution of Pandas.
 ```
-export PYTHONPATH="${PYTHONPATH}:$PATH"
-```
-
-To use in iPython environments like Jupyter
-you can include these lines in each script:
-```
-import sys
-sys.path.append("$PATH")
 import s3
 
 df = s3.read_csv('s3://bucket_name/key_name/file_name.tsv.gz', 
