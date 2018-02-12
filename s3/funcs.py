@@ -241,7 +241,7 @@ def exists(s3_path):
 
     objs = list(bucket.objects.filter(Prefix=key_))
     
-    if len(objs) > 0 and objs[0].key == key_:
+    if len(objs) > 0:
         return True
     else:
         return False
