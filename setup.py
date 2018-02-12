@@ -14,7 +14,6 @@ setup(name='s34me',
 		'pandas<=0.19.2',
 		'boto3>=1.4.4',
 		'botocore>=1.5.7',
-		'pandas>=0.19.2',
 		'scikit-learn>=0.18.1'
 	]
 )
