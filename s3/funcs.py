@@ -254,6 +254,7 @@ def file_exists(s3_path):
     '''
     s3 = boto3.resource('s3')
 
+    bucket_, key_ = get_both(s3_path)
     try:  
         s3.Object(bucket_, key_).load()
     except botocore.exceptions.ClientError as e:
