@@ -1,13 +1,9 @@
-"""
-Created on Fri Apr 29 16:16:28 2016
 
-@author: lyin
-"""
 import os
 import pandas as pd
 import botocore
 import boto3
-from .funcs import get_both, disk_2_s3, open
+from .funcs import get_both, disk_2_s3, open, read
 
 def read_csv(s3_path, *args, **kwargs):
     '''
@@ -28,7 +24,7 @@ def read_json(s3_path, *args, **kwargs):
     Read a json file from s3 into memory in a pandas dataframe.
     '''                
     try:
-        buffer_in_binary = open(s3_path)
+        buffer_in_binary = read(s3_path)
 
     except botocore.exceptions.ClientError as e:
         return "Unexpected error: %s" % e
@@ -61,4 +57,3 @@ def to_json(df, s3_path, *args, **kwargs):
     os.remove(temp_file_)
     
     return "File uploaded to '%s'" % s3_path
-
