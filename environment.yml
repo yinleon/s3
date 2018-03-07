@@ -6,3 +6,4 @@ dependencies:
   - botocore==1.5.7
   - pandas==0.19.2
   - scikit-learn==0.18.1 
+  - scipy==1.0.0
