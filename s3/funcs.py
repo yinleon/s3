@@ -13,12 +13,14 @@ import fnmatch
 import botocore
 import boto3
 
+
 def get_bucket(s3_path):
     '''
     Parses string of the s3_path to return the bucket.
     '''
     bucket_ = s3_path.replace('s3://','').split('/')[0]
     return bucket_
+
 
 def get_key(s3_path):
     '''
@@ -27,6 +29,7 @@ def get_key(s3_path):
     bucket_ = get_bucket(s3_path)
     key_    = s3_path.split(bucket_)[-1][1:]
     return key_
+
 
 def get_both(s3_path):
     '''
@@ -37,13 +40,14 @@ def get_both(s3_path):
     return (bucket_,key_)
 
     
-def disk_2_s3(file,s3_path):  
+def disk_2_s3(file, s3_path):  
     '''
     Sends a file in local disk to s3 bucket.
     Please note that the s3_path needs to be this format:
     s3://bucket/key/filename.ext
     '''
-        
+    if not os.path.exists(file):
+        raise ValueError('The local file {} does not exist.'.format(file))
     # make connection to s3
     s3 = boto3.resource('s3')
 
@@ -56,8 +60,7 @@ def disk_2_s3(file,s3_path):
         bucket = s3.Bucket(bucket_name)
     
     else:
-        print("include valid s3:// path")
-        return
+        raise ValueError("include valid s3:// path")
 
     # upload file to s3.
     try:
@@ -66,13 +69,10 @@ def disk_2_s3(file,s3_path):
             Key=key_
         )
     except botocore.exceptions.ClientError as e:
-        return "Unexpected error: {err} for pattern '{key}' in {bucket}".format(
-                    err=e, key=key_, bucket=bucket_name
-                    
-            )
+        raise ValueError("Unexpected error: {err} for pattern '{key}' in {bucket}".format(
+                    err=e, key=key_, bucket=bucket_name))
     except:
-        return "Write Permissions Denied"
-    
+        raise ValueError("include valid s3:// path")
     
     return "'{f}' loaded to '{path}'".format(f=file, path=s3_path)
 
@@ -97,8 +97,7 @@ def ls(search_key):
         bucket_name, search_key = get_both(search_key)
         bucket = s3.Bucket(bucket_name)
     else:
-        print("include valid s3:// path")
-        return
+        raise ValueError("include valid s3:// path")
     
     # Prase for regex
     root = search_key.replace('s3://','') \
@@ -116,17 +115,17 @@ def ls(search_key):
                     Prefix=root[0]) if obj.key != search_key], search_key)
                     
     except botocore.exceptions.ClientError as e:
-        return "Unexpected error: {err} for pattern '{key}' in {bucket}".format(
-                err=e, key=search_key, bucket=bucket_name)
+        raise ValueError("Unexpected error: {err} for pattern '{key}' in {bucket}".format(
+                err=e, key=search_key, bucket=bucket_name))
     
     except KeyError as e:
-        return "No files following the pattern '{regex}' found in bucket {bucket}".format(
-            regex=search_key, bucket=bucket_name)
+        raise ValueError("KeyError: No files following the pattern '{regex}' found in bucket {bucket}".format(
+            regex=search_key, bucket=bucket_name))
 
     
     return [os.path.join('s3://' + bucket_name, f) for f in ls]
 
-def open(s3_path,encoding="utf-8", bytes=True):
+def open_file(s3_path,encoding="utf-8", bytes=True):
     '''
     Read a file from s3 into a string.
     Can return stream of bytes of string.
@@ -156,13 +155,14 @@ def open(s3_path,encoding="utf-8", bytes=True):
                      .decode(encoding)
 
     except botocore.exceptions.ClientError as e:
-        return "Unexpected error: %s" % e
+        raise ValueError("Unexpected error: %s" % e)
 
 def read(s3_path, encoding='utf-8', bytes=False):
     '''
     Alias for open()
     '''
     return open(s3_path, encoding, bytes)
+
 
 def wget(s3_path, local_path=False):
     '''
@@ -179,14 +179,14 @@ def wget(s3_path, local_path=False):
         bucket_, key_ = get_both(s3_path)
 
     else:
-        print("include valid s3:// path")
-        return
+        raise ValueError('include valid s3:// path'.)
 
     
     if not local_path:
         local_path = s3_path.split('/')[-1]
 
     return s3.Object(bucket_, key_).download_file(local_path)
+
 
 def mv(old_path, new_path, keep=False):
     '''
@@ -206,11 +206,13 @@ def mv(old_path, new_path, keep=False):
         else:
             return s3.delete_object(Bucket=bucket_1, Key=key_1)
 
+
 def cp(old_path, new_path):
     '''
     Alias for mv
     '''
     return mv(old_path, new_path, keep=True)
+
 
 def rm(s3_path):
     '''
@@ -222,11 +224,13 @@ def rm(s3_path):
 
     return s3.delete_object(Bucket=bucket_, Key=key_)
 
+
 def remove(s3_path):
     '''
     Alias for rm()
     '''
     return rm(s3_path)
+
 
 def exists(s3_path):
     '''
@@ -254,7 +258,6 @@ def file_exists(s3_path):
     '''
     s3 = boto3.resource('s3')
 
-    bucket_, key_ = get_both(s3_path)
     try:  
         s3.Object(bucket_, key_).load()
     except botocore.exceptions.ClientError as e:
