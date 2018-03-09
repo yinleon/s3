@@ -179,7 +179,7 @@ def wget(s3_path, local_path=False):
         bucket_, key_ = get_both(s3_path)
 
     else:
-        raise ValueError('include valid s3:// path'.)
+        raise ValueError('include valid s3:// path')
 
     
     if not local_path:
