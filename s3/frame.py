@@ -3,14 +3,14 @@ import os
 import pandas as pd
 import botocore
 import boto3
-from .funcs import get_both, disk_2_s3, open, read
+from .funcs import get_both, disk_2_s3, open_file, read
 
 def read_csv(s3_path, *args, **kwargs):
     '''
     Read a csv file from s3 into memory in a pandas dataframe
     '''
     try:
-        buffer_in_binary = open(s3_path)
+        buffer_in_binary = open_file(s3_path)
     
     except botocore.exceptions.ClientError as e:
         return "Unexpected error: %s" % e
