@@ -3,10 +3,10 @@ from setuptools import setup
 
 setup(name='s34me',
 	packages=['s3'],
-	version='0.1.1',
+	version='0.1.2',
 	description='s34me is a high-level wrapper for handling s3 objects in boto3 and Pandas',
 	author='leon yin',
-	author_email='ly501@nyu.edu',
+	author_email='',
 	url='https://github.com/yinleon/s3',
 	keywords='aws s3 boto3 pandas dataframe',
 	license='MIT',
