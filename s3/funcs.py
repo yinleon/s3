@@ -40,7 +40,7 @@ def get_both(s3_path):
     return (bucket_,key_)
 
     
-def disk_2_s3(file, s3_path):  
+def disk_2_s3(file, s3_path, acl='private'):  
     '''
     Sends a file in local disk to s3 bucket.
     Please note that the s3_path needs to be this format:
@@ -66,7 +66,9 @@ def disk_2_s3(file, s3_path):
     try:
         bucket.upload_file(
             Filename=file,
-            Key=key_
+            Key=key_,
+            ExtraArgs={'ACL': acl}
+            
         )
     except botocore.exceptions.ClientError as e:
         raise ValueError("Unexpected error: {err} for pattern '{key}' in {bucket}".format(
@@ -188,7 +190,7 @@ def wget(s3_path, local_path=False):
     return s3.Object(bucket_, key_).download_file(local_path)
 
 
-def mv(old_path, new_path, keep=False):
+def mv(old_path, new_path, keep=False, acl='private'):
     '''
     Moves a file from one bucket to another.
     '''
@@ -198,7 +200,8 @@ def mv(old_path, new_path, keep=False):
     bucket_2, key_2 = get_both(new_path)
 
     r = s3.copy_object(Bucket=bucket_2, Key=key_2, 
-                       CopySource=dict(Bucket=bucket_1, Key=key_1))
+                       CopySource=dict(Bucket=bucket_1, Key=key_1),
+                       ACL=acl)
 
     if r['ResponseMetadata']['HTTPStatusCode'] == 200:
         if keep:   
@@ -207,11 +210,11 @@ def mv(old_path, new_path, keep=False):
             return s3.delete_object(Bucket=bucket_1, Key=key_1)
 
 
-def cp(old_path, new_path):
+def cp(old_path, new_path, acl='private'):
     '''
     Alias for mv
     '''
-    return mv(old_path, new_path, keep=True)
+    return mv(old_path, new_path, keep=True, acl=acl)
 
 
 def rm(s3_path):
@@ -257,7 +260,7 @@ def file_exists(s3_path):
     Cheaper than exists, which employs a list.
     '''
     s3 = boto3.resource('s3')
-
+    bucket_, key_ = get_both(s3_path)
     try:  
         s3.Object(bucket_, key_).load()
     except botocore.exceptions.ClientError as e:
