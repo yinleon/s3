@@ -12,18 +12,11 @@ def read_csv(s3_path, *args, **kwargs):
     return pd.read_csv(s3_path, *args, **kwargs)
 
 
-def read_json(s3_path, *args, **kwargs):
+def read_json(s3_path, encoding="utf-8", bytes=True, *args, **kwargs):
     '''
     Read a json file from s3 into memory in a pandas dataframe.
-    '''                
-    try:
-        buffer_in_binary = read(s3_path)
-
-    except botocore.exceptions.ClientError as e:
-        return "Unexpected error: %s" % e
-    
-    # note should just ask for kwargs.  
-    return pd.read_json(buffer_in_binary, *args, **kwargs)
+    '''                    
+    return pd.read_json(s3_path, *args, **kwargs)
 
 def to_csv(df, s3_path, acl='private', *args, **kwargs):
     '''    
